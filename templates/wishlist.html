@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Wishlist - Ocean Market{% endblock %}
+
+{% block extra_css %}
+<style>
+    .wishlist-section {
+        padding: 3rem 5%;
+        background: linear-gradient(180deg, #f0f9ff 0%, #fff 100%);
+        min-height: 70vh;
+    }
+    
+    .wishlist-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .wishlist-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .wishlist-header h1 {
+        color: #023e8a;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .wishlist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+    
+    .wishlist-item {
+        background: #fff;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 100, 150, 0.1);
+        transition: all 0.4s ease;
+        position: relative;
+    }
+    
+    .wishlist-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 100, 150, 0.2);
+    }
+    
+    .wishlist-item-image {
+        height: 180px;
+        background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .wishlist-item-image i {
+        font-size: 4rem;
+        color: #0077b6;
+    }
+    
+    .remove-wishlist {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 35px;
+        height: 35px;
+        background: #fff;
+        border: none;
+        border-radius: 50%;
+        color: #f44336;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .remove-wishlist:hover {
+        background: #f44336;
+        color: #fff;
+    }
+    
+    .wishlist-item-info {
+        padding: 1.5rem;
+    }
+    
+    .wishlist-item-info h3 {
+        color: #023e8a;
+        margin-bottom: 0.5rem;
+    }
+    
+    .wishlist-item-info .weight {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .wishlist-item-info .price {
+        font-size: 1.3rem;
+        color: #0077b6;
+        font-weight: 600;
+    }
+    
+    .wishlist-actions {
+        padding: 0 1.5rem 1.5rem;
+    }
+    
+    .btn-add-cart {
+        width: 100%;
+        padding: 0.75rem;
+        background: linear-gradient(135deg, #0077b6, #00b4d8);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-add-cart:hover {
+        transform: translateY(-2-shadow: 0 5px px);
+        box15px rgba(0, 180, 216, 0.4);
+    }
+    
+    .empty-wishlist {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+    
+    .empty-wishlist i {
+        font-size: 5rem;
+        color: #ccc;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-wishlist h3 {
+        color: #666;
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-wishlist p {
+        color: #999;
+        margin-bottom: 1.5rem;
+    }
+    
+    .continue-shopping {
+        display: inline-block;
+        padding: 0.75rem 2rem;
+        background: #0077b6;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+    }
+    
+    .continue-shopping:hover {
+        background: #00b4d8;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="wishlist-section">
+    <div class="wishlist-container">
+        <div class="wishlist-header">
+            <h1>My Wishlist</h1>
+        </div>
+        
+        {% if wishlist_items %}
+        <div class="wishlist-grid">
+            {% for item in wishlist_items %}
+            <div class="wishlist-item">
+                <button class="remove-wishlist" onclick="window.location.href='{% url 'remove_from_wishlist' item.id %}'">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="wishlist-item-image">
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        <i class="fas fa-fish"></i>
+                    {% endif %}
+                </div>
+                <div class="wishlist-item-info">
+                    <h3>{{ item.product.name }}</h3>
+                    <p class="weight">Weight: {{ item.product.weight }}</p>
+                    <div class="price">₹{{ item.product.price }}</div>
+                </div>
+                <div class="wishlist-actions">
+                    <a href="{% url 'add_to_cart' item.product.id %}" class="btn-add-cart">
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-wishlist">
+            <i class="fas fa-heart"></i>
+            <h3>Your wishlist is empty</h3>
+            <p>Save your favorite items for later!</p>
+            <a href="{% url 'home' %}" class="continue-shopping">Start Shopping</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

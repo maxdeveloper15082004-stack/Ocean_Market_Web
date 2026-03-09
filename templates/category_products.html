@@ -1,0 +1,311 @@
+i want {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - Ocean Market{% endblock %}
+
+{% block extra_css %}
+<style>
+    .category-header {
+        background: linear-gradient(135deg, #0077b6, #00b4d8);
+        padding: 3rem 5%;
+        text-align: center;
+        color: #fff;
+    }
+    
+    .category-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .category-header p {
+        opacity: 0.9;
+    }
+    
+    .products-section {
+        padding: 3rem 5%;
+        background: #f0f9ff;
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .product-card {
+        background: #fff;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 100, 150, 0.1);
+        transition: all 0.4s ease;
+        position: relative;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 100, 150, 0.2);
+    }
+    
+    .product-image {
+        height: 200px;
+        background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .product-image i {
+        font-size: 5rem;
+        color: #0077b6;
+        transition: all 0.4s ease;
+    }
+    
+    .product-card:hover .product-image i {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    .stock-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .stock-badge.in-stock {
+        background: #4caf50;
+        color: #fff;
+    }
+    
+    .stock-badge.low-stock {
+        background: #ff9800;
+        color: #fff;
+    }
+    
+    .stock-badge.out-of-stock {
+        background: #f44336;
+        color: #fff;
+    }
+    
+    .product-info {
+        padding: 1.5rem;
+    }
+    
+    .product-name {
+        font-size: 1.2rem;
+        color: #023e8a;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    
+    .product-weight {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .product-price {
+        font-size: 1.5rem;
+        color: #0077b6;
+        font-weight: 700;
+    }
+    
+    .product-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #0077b6, #00b4d8);
+        color: #fff;
+        flex: 1;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 180, 216, 0.4);
+    }
+    
+    .btn-outline {
+        background: transparent;
+        border: 2px solid #0077b6;
+        color: #0077b6;
+    }
+    
+    .btn-outline:hover {
+        background: #0077b6;
+        color: #fff;
+    }
+    
+    .btn-wishlist {
+        padding: 0.75rem;
+        background: #fff;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        color: #666;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-wishlist:hover {
+        border-color: #f44336;
+        color: #f44336;
+    }
+    
+    .btn-wishlist.active {
+        background: #f44336;
+        border-color: #f44336;
+        color: #fff;
+    }
+    
+    /* Pagination */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 3rem;
+    }
+    
+    .pagination a, .pagination span {
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        text-decoration: none;
+        color: #0077b6;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination a:hover {
+        background: #0077b6;
+        color: #fff;
+    }
+    
+    .pagination .current {
+        background: #0077b6;
+        color: #fff;
+    }
+    
+    .empty-category {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+    
+    .empty-category i {
+        font-size: 5rem;
+        color: #ccc;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-category h3 {
+        color: #666;
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="category-header">
+    <h1>{{ category.name }}</h1>
+    <p>Fresh and quality {{ category.name }} delivered to your door</p>
+</div>
+
+<section class="products-section">
+    {% if page_obj %}
+    <div class="products-grid">
+        {% for product in page_obj %}
+        <div class="product-card">
+            <div class="product-image">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    <i class="fas fa-fish"></i>
+                {% endif %}
+                <span class="stock-badge {{ product.stock_status }}">
+                    {% if product.stock_status == 'in_stock' %}In Stock
+                    {% elif product.stock_status == 'low_stock' %}Low Stock
+                    {% else %}Out of Stock{% endif %}
+                </span>
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">{{ product.name }}</h3>
+                <p class="product-weight">Weight: {{ product.weight }}</p>
+                <div class="product-price">₹{{ product.price }}</div>
+                <div class="product-actions">
+                    <form method="POST" action="{% url 'add_to_cart' product.id %}" style="flex:1;">
+                        {% csrf_token %}
+                        <input type="hidden" name="quantity" value="1">
+                        <input type="hidden" name="weight" value="{{ product.weight }}">
+                        <button type="submit" class="btn btn-primary" style="width:100%;" {% if product.stock_status == 'out_of_stock' %}disabled{% endif %}>
+                            <i class="fas fa-cart-plus"></i> Add to Cart
+                        </button>
+                    </form>
+                    <a href="{% url 'product_detail' product.slug %}" class="btn btn-outline">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    {% if user.is_authenticated %}
+                    <button class="btn-wishlist" onclick="addToWishlist({{ product.id }})">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">&laquo; Previous</a>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="current">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="empty-category">
+        <i class="fas fa-box-open"></i>
+        <h3>No products found</h3>
+        <p>Check back soon for fresh {{ category.name }}!</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function addToWishlist(productId) {
+    window.location.href = '/add-to-wishlist/' + productId + '/';
+}
+</script>
+{% endblock %}

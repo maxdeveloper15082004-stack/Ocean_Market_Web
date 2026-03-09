@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - Ocean Market{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-section {
+        padding: 3rem 5%;
+        background: linear-gradient(180deg, #f0f9ff 0%, #fff 100%);
+        min-height: 70vh;
+    }
+    
+    .about-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .about-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .about-header h1 {
+        color: #023e8a;
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+    }
+    
+    .about-content {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 100, 150, 0.1);
+        padding: 2rem;
+        line-height: 1.8;
+        color: #555;
+    }
+    
+    .about-content h2 {
+        color: #023e8a;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .about-content p {
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+    
+    .about-content ul {
+        margin: 1rem 0 1rem 2rem;
+        color: #555;
+    }
+    
+    .about-content li {
+        margin-bottom: 0.75rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="about-section">
+    <div class="about-container">
+        <div class="about-header">
+            <h1>About Us</h1>
+        </div>
+        
+        <div class="about-content">
+            <p>Welcome to Ocean Market, your trusted source for the freshest seafood delivered straight from the ocean to your table. Founded with a passion for quality and sustainability, we are committed to bringing you the finest selection of premium sea foods.</p>
+            
+            <h2>Our Mission</h2>
+            <p>At Ocean Market, our mission is to provide customers with the highest quality fresh seafood while supporting sustainable fishing practices. We believe that great food starts with great sourcing, and we're dedicated to building direct relationships with trusted fishermen and suppliers.</p>
+            
+            <h2>Why Choose Us?</h2>
+            <ul>
+                <li><strong>100% Fresh:</strong> All our seafood is sourced directly from the ocean and delivered within hours</li>
+                <li><strong>Quality Assured:</strong> Every product undergoes rigorous quality checks before reaching your doorstep</li>
+                <li><strong>Fast Delivery:</strong> Quick and reliable delivery service across available areas</li>
+                <li><strong>Expert Support:</strong> Our team is available 24/7 to assist you with any queries</li>
+                <li><strong>Sustainable Practices:</strong> We're committed to responsible and ethical fishing practices</li>
+            </ul>
+            
+            <h2>Our Selection</h2>
+            <p>We offer a wide variety of fresh seafood including premium fish, succulent prawns, fresh crabs, and tender squid. Each product is carefully selected to ensure the highest standards of quality and freshness.</p>
+            
+            <h2>Contact Us</h2>
+            <p>Have questions? We're here to help! Reach out to us at any time through our website or contact our support team for assistance.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

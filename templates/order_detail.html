@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order {{ order.order_number }} - Ocean Market{% endblock %}
+
+{% block extra_css %}
+<style>
+    .order-detail-section {
+        padding: 3rem 5%;
+        background: linear-gradient(180deg, #f0f9ff 0%, #fff 100%);
+        min-height: 70vh;
+    }
+    
+    .order-detail-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .order-header {
+        background: linear-gradient(135deg, #0077b6, #00b4d8);
+        padding: 2rem;
+        border-radius: 15px;
+        color: #fff;
+        margin-bottom: 2rem;
+    }
+    
+    .order-header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .order-status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .order-status-badge.pending { background: #fff3e0; color: #f57c00; }
+    .order-status-badge.processing { background: #e3f2fd; color: #1976d2; }
+    .order-status-badge.shipped { background: #f3e5f5; color: #7b1fa2; }
+    .order-status-badge.delivered { background: #e8f5e9; color: #388e3c; }
+    .order-status-badge.cancelled { background: #ffebee; color: #d32f2f; }
+    
+    .order-info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .info-card {
+        background: #fff;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0, 100, 150, 0.1);
+    }
+    
+    .info-card h3 {
+        color: #023e8a;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+    
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    
+    .info-row label {
+        color: #666;
+    }
+    
+    .info-row span {
+        color: #023e8a;
+        font-weight: 600;
+    }
+    
+    .order-items {
+        background: #fff;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0, 100, 150, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .order-items h3 {
+        color: #023e8a;
+        margin-bottom: 1rem;
+    }
+    
+    .order-item {
+        display: grid;
+        grid-template-columns: 80px 1fr auto auto;
+        gap: 1rem;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .order-item:last-child {
+        border-bottom: none;
+    }
+    
+    .item-image {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .item-image i {
+        font-size: 2rem;
+        color: #0077b6;
+    }
+    
+    .item-info h4 {
+        color: #023e8a;
+        margin-bottom: 0.25rem;
+    }
+    
+    .item-info p {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .item-price, .item-total {
+        color: #0077b6;
+        font-weight: 600;
+    }
+    
+    .order-total-section {
+        background: #fff;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0, 100, 150, 0.1);
+    }
+    
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .total-row:last-child {
+        border-bottom: none;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #023e8a;
+    }
+    
+    .btn-back {
+        display: inline-block;
+        margin-bottom: 1rem;
+        color: #0077b6;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-back:hover {
+        color: #00b4d8;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="order-detail-section">
+    <div class="order-detail-container">
+        <a href="{% url 'orders' %}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Back to Orders
+        </a>
+        
+        <div class="order-header">
+            <h1>Order #{{ order.order_number }}</h1>
+            <span class="order-status-badge {{ order.status }}">{{ order.get_status_display }}</span>
+        </div>
+        
+        <div class="order-info-grid">
+            <div class="info-card">
+                <h3><i class="fas fa-user"></i> Customer Info</h3>
+                <div class="info-row">
+                    <label>Name</label>
+                    <span>{{ order.user.username }}</span>
+                </div>
+                <div class="info-row">
+                    <label>Email</label>
+                    <span>{{ order.user.email }}</span>
+                </div>
+                <div class="info-row">
+                    <label>Phone</label>
+                    <span>{{ order.phone }}</span>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <h3><i class="fas fa-map-marker-alt"></i> Shipping Address</h3>
+                <p>{{ order.shipping_address }}</p>
+            </div>
+        </div>
+        
+        <div class="order-items">
+            <h3>Order Items</h3>
+            {% for item in order.items.all %}
+            <div class="order-item">
+                <div class="item-image">
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        <i class="fas fa-fish"></i>
+                    {% endif %}
+                </div>
+                <div class="item-info">
+                    <h4>{{ item.product.name }}</h4>
+                    <p>{{ item.weight }} x {{ item.quantity }}</p>
+                </div>
+                <div class="item-price">₹{{ item.price }}</div>
+                <div class="item-total">₹{{ item.total_price }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="order-total-section">
+            <div class="total-row">
+                <span>Order Date</span>
+                <span>{{ order.created_at|date:"M d, Y" }}</span>
+            </div>
+            <div class="total-row">
+                <span>Total Amount</span>
+                <span>₹{{ order.total_amount }}</span>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

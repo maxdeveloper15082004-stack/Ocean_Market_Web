@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Orders - Ocean Market{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-orders-section {
+        padding: 3rem 5%;
+        background: linear-gradient(180deg, #f0f9ff 0%, #fff 100%);
+        min-height: 70vh;
+    }
+    
+    .admin-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .admin-header h1 {
+        color: #023e8a;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .orders-table {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 100, 150, 0.1);
+        overflow: hidden;
+    }
+    
+    .table-header {
+        background: linear-gradient(135deg, #0077b6, #00b4d8);
+        padding: 1.5rem;
+        color: #fff;
+    }
+    
+    .table-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+    
+    th {
+        background: #f8f9fa;
+        color: #023e8a;
+        font-weight: 600;
+    }
+    
+    tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .order-number {
+        font-weight: 600;
+        color: #023e8a;
+    }
+    
+    .customer-info {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .order-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .order-status.pending { background: #fff3e0; color: #f57c00; }
+    .order-status.processing { background: #e3f2fd; color: #1976d2; }
+    .order-status.shipped { background: #f3e5f5; color: #7b1fa2; }
+    .order-status.delivered { background: #e8f5e9; color: #388e3c; }
+    .order-status.cancelled { background: #ffebee; color: #d32f2f; }
+    
+    .order-amount {
+        font-weight: 700;
+        color: #0077b6;
+    }
+    
+    .status-form select {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background: #fff;
+    }
+    
+    .btn-view {
+        padding: 0.5rem 1rem;
+        background: #0077b6;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-view:hover {
+        background: #00b4d8;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="admin-orders-section">
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1><i class="fas fa-shopping-bag"></i> Manage Orders</h1>
+        </div>
+        
+        <div class="orders-table">
+            <div class="table-header">
+                <h2>All Orders</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Update</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td class="order-number">{{ order.order_number }}</td>
+                        <td>
+                            <div class="customer-info">
+                                <strong>{{ order.user.username }}</strong><br>
+                                {{ order.phone }}
+                            </div>
+                        </td>
+                        <td>{{ order.created_at|date:"M d, Y" }}</td>
+                        <td class="order-amount">₹{{ order.total_amount }}</td>
+                        <td>
+                            <span class="order-status {{ order.status }}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <form method="POST" action="{% url 'update_order_status' order.order_number %}" class="status-form">
+                                {% csrf_token %}
+                                <select name="status" onchange="this.form.submit()">
+                                    <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="processing" {% if order.status == 'processing' %}selected{% endif %}>Processing</option>
+                                    <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Shipped</option>
+                                    <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                                    <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem;">
+                            No orders found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

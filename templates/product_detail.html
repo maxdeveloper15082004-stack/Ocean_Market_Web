@@ -1,0 +1,435 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Ocean Market{% endblock %}
+
+{% block extra_css %}
+<style>
+    .product-detail-section {
+        padding: 3rem 5%;
+        background: linear-gradient(180deg, #f0f9ff 0%, #fff 100%);
+        min-height: 70vh;
+    }
+    
+    .product-detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+    }
+    
+    .product-image-container {
+        background: #fff;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 100, 150, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    .product-image-container.has-image {
+        padding: 0;
+    }
+    
+    .product-image-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+        z-index: 0;
+        opacity: 0.6;
+    }
+    
+    .product-image-container i {
+        font-size: 10rem;
+        color: #0077b6;
+        position: relative;
+        z-index: 1;
+        display: block;
+        text-align: center;
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    /* ensure actual product image sits above the background gradient */
+    .product-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .stock-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 8px 20px;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        z-index: 2;
+    }
+    
+    .stock-badge.in-stock {
+        background: #4caf50;
+        color: #fff;
+    }
+    
+    .stock-badge.low-stock {
+        background: #ff9800;
+        color: #fff;
+    }
+    
+    .stock-badge.out-of-stock {
+        background: #f44336;
+        color: #fff;
+    }
+    
+    .product-info-container {
+        padding: 1rem 0;
+    }
+    
+    .product-category {
+        color: #0077b6;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .product-title {
+        font-size: 2.5rem;
+        color: #023e8a;
+        margin-bottom: 1rem;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .product-description {
+        color: #666;
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
+    }
+    
+    .product-price {
+        font-size: 2rem;
+        color: #0077b6;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .product-meta {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #666;
+    }
+    
+    .meta-item i {
+        color: #0077b6;
+    }
+    
+    .product-options {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .option-group {
+        margin-bottom: 1rem;
+    }
+    
+    .option-group label {
+        display: block;
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .option-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #fff;
+    }
+    
+    .option-group select:focus {
+        outline: none;
+        border-color: #0077b6;
+    }
+    
+    .quantity-group {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        border: 2px solid #0077b6;
+        background: #fff;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #0077b6;
+    }
+    
+    .quantity-btn:hover {
+        background: #0077b6;
+        color: #fff;
+    }
+    
+    .quantity-input {
+        width: 80px;
+        padding: 0.75rem;
+        text-align: center;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .btn-add-cart {
+        flex: 1;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #0077b6, #00b4d8);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-add-cart:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0, 180, 216, 0.4);
+    }
+    
+    .btn-add-cart:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .btn-wishlist {
+        padding: 1rem 1.5rem;
+        background: #fff;
+        border: 2px solid #0077b6;
+        border-radius: 10px;
+        color: #0077b6;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-wishlist:hover, .btn-wishlist.active {
+        background: #f44336;
+        border-color: #f44336;
+        color: #fff;
+    }
+    
+    /* Related Products */
+    .related-products {
+        padding: 3rem 5%;
+        background: #fff;
+    }
+    
+    .related-products h2 {
+        text-align: center;
+        color: #023e8a;
+        margin-bottom: 2rem;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .related-card {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .related-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 100, 150, 0.15);
+    }
+    
+    .related-card i {
+        font-size: 3rem;
+        color: #0077b6;
+        margin-bottom: 1rem;
+    }
+    
+    .related-card h4 {
+        color: #023e8a;
+        margin-bottom: 0.5rem;
+    }
+    
+    .related-card .price {
+        color: #0077b6;
+        font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+        .product-detail-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .product-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="product-detail-section">
+    <div class="product-detail-container">
+        <div class="product-image-container {% if product.image %}has-image{% endif %}">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+                <i class="fas fa-fish"></i>
+            {% endif %}
+            <span class="stock-badge {{ product.stock_status }}">
+                {% if product.stock_status == 'in_stock' %}In Stock
+                {% elif product.stock_status == 'low_stock' %}Low Stock
+                {% else %}Out of Stock{% endif %}
+            </span>
+        </div>
+        
+        <div class="product-info-container">
+            <div class="product-category">{{ product.category.name }}</div>
+            <h1 class="product-title">{{ product.name }}</h1>
+            <p class="product-description">{{ product.description }}</p>
+            
+            <div class="product-price">₹{{ product.price }}</div>
+            
+            <div class="product-meta">
+                <div class="meta-item">
+                    <i class="fas fa-weight"></i>
+                    <span>{{ product.weight }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-box"></i>
+                    <span>{{ product.stock_quantity }} available</span>
+                </div>
+            </div>
+            
+            <form method="POST" action="{% url 'add_to_cart' product.id %}" class="product-options">
+                {% csrf_token %}
+                
+                <div class="option-group">
+                    <label for="weight">Select Weight:</label>
+                    <select name="weight" id="weight">
+                        <option value="500g">500g</option>
+                        <option value="1kg" selected>1kg</option>
+                        <option value="2kg">2kg</option>
+                        <option value="5kg">5kg</option>
+                    </select>
+                </div>
+                
+                <div class="option-group">
+                    <label for="quantity">Quantity:</label>
+                    <div class="quantity-group">
+                        <button type="button" class="quantity-btn" onclick="decreaseQuantity()">-</button>
+                        <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ product.stock_quantity }}" class="quantity-input">
+                        <button type="button" class="quantity-btn" onclick="increaseQuantity()">+</button>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn-add-cart" {% if product.stock_status == 'out_of_stock' %}disabled{% endif %}>
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </button>
+                    {% if user.is_authenticated %}
+                    <button type="button" class="btn-wishlist {% if in_wishlist %}active{% endif %}" onclick="toggleWishlist({{ product.id }})">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% if related_products %}
+<section class="related-products">
+    <h2>Related Products</h2>
+    <div class="related-grid">
+        {% for related in related_products %}
+        <div class="related-card" onclick="window.location.href='{% url 'product_detail' related.slug %}'">
+            {% if related.image %}
+                <img src="{{ related.image.url }}" alt="{{ related.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+            {% else %}
+                <i class="fas fa-fish"></i>
+            {% endif %}
+            <h4>{{ related.name }}</h4>
+            <div class="price">₹{{ related.price }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function increaseQuantity() {
+    const input = document.getElementById('quantity');
+    const max = parseInt(input.max);
+    if (parseInt(input.value) < max) {
+        input.value = parseInt(input.value) + 1;
+    }
+}
+
+function decreaseQuantity() {
+    const input = document.getElementById('quantity');
+    if (parseInt(input.value) > 1) {
+        input.value = parseInt(input.value) - 1;
+    }
+}
+
+function toggleWishlist(productId) {
+    window.location.href = '/add-to-wishlist/' + productId + '/';
+}
+</script>
+{% endblock %}
